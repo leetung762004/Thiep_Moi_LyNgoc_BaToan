@@ -255,11 +255,8 @@
 
     <script>
         // --- SCRIPT CHO HIỆU ỨNG CUỘN (SCROLL REVEAL) ---
-        // --- SCRIPT CHO HIỆU ỨNG CUỘN (SCROLL REVEAL) ---
-        // Giữ nguyên logic này
         function checkVisibility() {
             const cardContainer = document.querySelector('.wedding-card-container');
-            // Chỉ kiểm tra nếu thiệp đã được hiển thị (gate cover đã mở)
             if (cardContainer && cardContainer.classList.contains('hidden')) {
                 return;
             }
@@ -272,121 +269,6 @@
                 }
             });
         }
-        window.addEventListener('scroll', checkVisibility);
-        window.addEventListener('load', checkVisibility);
-
-
-        // --- SCRIPT CHO ĐIỀU KHIỂN NHẠC VÀ HIỆU ỨNG MỞ CỔNG (ĐÃ TỐI ƯU) ---
-        document.addEventListener('DOMContentLoaded', () => {
-            const musicControl = document.getElementById('music-control');
-            const backgroundMusic = document.getElementById('background-music');
-            const iconSlash = document.getElementById('music-icon-slash');
-
-            const gateCover = document.getElementById('gate-cover');
-            const leftGate = document.querySelector('.left-gate');
-            const rightGate = document.querySelector('.right-gate');
-            const cardContainer = document.querySelector('.wedding-card-container');
-
-            let isGateOpened = false; // Cờ kiểm tra đã mở cổng chưa
-            let isMusicActivated = false; // Cờ kiểm tra đã gọi play() lần đầu chưa
-
-            // Hàm kích hoạt nhạc nền (chỉ chạy khi có tương tác)
-            const activateMusic = () => {
-                if (isMusicActivated) return; // Chỉ gọi play() một lần duy nhất
-
-                backgroundMusic.currentTime = 0;
-                const playPromise = backgroundMusic.play();
-
-                if (playPromise !== undefined) {
-                    playPromise.then(() => {
-                        // Phát thành công: Đặt trạng thái Đang phát
-                        isMusicActivated = true;
-                        musicControl.classList.add('playing');
-                        musicControl.classList.remove('paused');
-                        iconSlash.style.display = 'none';
-                    }).catch(error => {
-                        // Phát thất bại: Đặt trạng thái Dừng (Hiển thị gạch chéo)
-                        isMusicActivated = true;
-                        musicControl.classList.add('paused');
-                        musicControl.classList.remove('playing');
-                        iconSlash.style.display = 'flex';
-                        console.log("Nhạc bị chặn Autoplay. Đã đặt trạng thái Dừng.");
-                    });
-                }
-            };
-
-            // Hàm mở cổng (Gate Opening Logic)
-            const openGate = () => {
-                if (isGateOpened) return; // Chỉ mở 1 lần
-                isGateOpened = true;
-
-                // 1. Kích hoạt nhạc (Đây là tương tác đầu tiên của người dùng)
-                activateMusic();
-
-                // 2. Kích hoạt hiệu ứng mở cổng
-                leftGate.classList.add('open');
-                rightGate.classList.add('open');
-                gateCover.classList.add('opening'); // Thêm class để ẩn chữ "Chạm để mở"
-
-                // 3. Hiển thị nội dung thiệp
-                cardContainer.classList.remove('hidden');
-                musicControl.classList.remove('hidden');
-
-                // 4. Ẩn hẳn lớp phủ sau khi hiệu ứng hoàn tất
-                setTimeout(() => {
-                    gateCover.style.display = 'none';
-                    checkVisibility(); // Chạy hiệu ứng reveal lần đầu
-                }, 1500); // 1.5 giây = thời gian transition CSS
-
-                // Sau khi mở cổng, ta không cần lắng nghe sự kiện click/touch nữa
-                document.removeEventListener('click', openGate);
-                document.removeEventListener('touchstart', openGate);
-            };
-
-            // Lắng nghe sự kiện click hoặc chạm trên toàn bộ document.
-            // Điều này tăng khả năng bắt được tương tác đầu tiên của người dùng.
-            // Ta dùng option `{ once: true }` để đảm bảo nó chỉ chạy 1 lần.
-            document.addEventListener('click', openGate, { once: true });
-            document.addEventListener('touchstart', openGate, { once: true });
-
-            // Đối với một số trình duyệt iOS, cần dùng sự kiện 'loadeddata' hoặc 'canplaythrough' 
-            // để đảm bảo file nhạc đã sẵn sàng trước khi gọi play().
-            backgroundMusic.addEventListener('loadeddata', () => {
-                // Nếu người dùng đã click/touch trước khi nhạc load xong, 
-                // ta sẽ gọi lại activateMusic()
-                if (isGateOpened && !isMusicActivated) {
-                    activateMusic();
-                }
-            });
-
-
-            // Hàm xử lý click nút điều khiển nhạc (BẬT/TẮT) - Giữ nguyên
-            const toggleMusic = () => {
-                if (musicControl.classList.contains('playing')) {
-                    // Đang phát -> Dừng
-                    backgroundMusic.pause();
-                    musicControl.classList.remove('playing');
-                    musicControl.classList.add('paused');
-                    iconSlash.style.display = 'flex';
-                } else {
-                    // Đang dừng -> Phát
-                    backgroundMusic.currentTime = 0;
-
-                    backgroundMusic.play().then(() => {
-                        musicControl.classList.add('playing');
-                        musicControl.classList.remove('paused');
-                        iconSlash.style.display = 'none';
-                    }).catch(error => {
-                        console.error("Không thể phát nhạc:", error);
-                    });
-                }
-            };
-
-            // Gắn sự kiện click vào icon điều khiển nhạc
-            musicControl.addEventListener('click', toggleMusic);
-
-            // Mặc định ẩn icon nhạc và thiệp (đã đặt class 'hidden' trong HTML)
-        });
         window.addEventListener('scroll', checkVisibility);
         window.addEventListener('load', checkVisibility);
 
@@ -484,12 +366,6 @@
 
 </html>
 <style>
-
-
-.gate-cover-wrapper.opening .initial-text {
-    opacity: 0;
-    transition: opacity 0.5s ease;
-}
     /* Variables */
     :root {
         --primary-color: #c98a8e;
@@ -715,7 +591,7 @@
     /* Đảm bảo đường chéo to, rõ nét và nằm chính giữa nút */
     .icon-slash line {
         stroke-width: 3;
-        transform: rotate(45deg);
+
     }
 
 
