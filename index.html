@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thiệp Cưới Hiện Đại - Save The Date</title>
+    <title>TEST</title>
     <link
         href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Open+Sans:wght@300;400;600&display=swap"
         rel="stylesheet">
@@ -253,177 +253,166 @@
         </div>
     </div>
 
-    <script>
-        // --- SCRIPT 1: HIỆU ỨNG CUỘN (SCROLL REVEAL) ---
-        function checkVisibility() {
-            const cardContainer = document.querySelector('.wedding-card-container');
-            // Chỉ chạy hiệu ứng khi thiệp đã mở
-            if (cardContainer && cardContainer.classList.contains('hidden')) {
-                return;
-            }
-
-            const elements = document.querySelectorAll('.data-reveal-item');
-            elements.forEach(el => {
-                const rect = el.getBoundingClientRect();
-                // Lộ diện khi phần tử cách cạnh dưới cửa sổ 20%
-                if (rect.top < window.innerHeight - (window.innerHeight * 0.2)) {
-                    el.classList.add('visible');
-                }
-            });
-        }
-        window.addEventListener('scroll', checkVisibility);
-        window.addEventListener('load', checkVisibility);
-
-
-        // --- SCRIPT 2: ĐẾM NGƯỢC (COUNTDOWN LOGIC) ---
-        // Thiết lập ngày cưới
-        const WEDDING_DATE = new Date("December 10, 2025 10:00:00").getTime();
-
-        function updateCountdown() {
-            const now = new Date().getTime();
-            const distance = WEDDING_DATE - now;
-
-            // Lấy các phần tử hiển thị
-            const daysEl = document.querySelector('.countdown-item:nth-child(1) .countdown-value');
-            const hoursEl = document.querySelector('.countdown-item:nth-child(2) .countdown-value');
-            const minutesEl = document.querySelector('.countdown-item:nth-child(3) .countdown-value');
-            const secondsEl = document.querySelector('.countdown-item:nth-child(4) .countdown-value');
-
-            if (distance < 0) {
-                // Đã đến ngày cưới
-                if (daysEl) {
-                    daysEl.innerHTML = "🎉";
-                    hoursEl.innerHTML = "Mừng";
-                    minutesEl.innerHTML = "Hạnh";
-                    secondsEl.innerHTML = "Phúc";
-                }
-                clearInterval(countdownInterval);
-                return;
-            }
-
-            // Tính toán thời gian
-            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-            // Hiển thị ra HTML (Thêm '0' nếu nhỏ hơn 10)
-            if (daysEl) {
-                daysEl.innerHTML = String(days).padStart(2, '0');
-                hoursEl.innerHTML = String(hours).padStart(2, '0');
-                minutesEl.innerHTML = String(minutes).padStart(2, '0');
-                secondsEl.innerHTML = String(seconds).padStart(2, '0');
-            }
+  <script>
+    // --- SCRIPT 1: HIỆU ỨNG CUỘN (SCROLL REVEAL) ---
+    function checkVisibility() {
+        const cardContainer = document.querySelector('.wedding-card-container');
+        if (cardContainer && cardContainer.classList.contains('hidden')) {
+            return;
         }
 
-        // Bắt đầu bộ đếm ngược
-        const countdownInterval = setInterval(updateCountdown, 1000);
-        // Chạy lần đầu ngay lập tức
-        document.addEventListener('DOMContentLoaded', updateCountdown);
-
-
-        // --- SCRIPT 3: ĐIỀU KHIỂN NHẠC VÀ HIỆU ỨNG MỞ CỔNG ---
-        document.addEventListener('DOMContentLoaded', () => {
-            const musicControl = document.getElementById('music-control');
-            const backgroundMusic = document.getElementById('background-music');
-            const iconSlash = document.getElementById('music-icon-slash');
-
-            const gateCover = document.getElementById('gate-cover');
-            const leftGate = document.querySelector('.left-gate');
-            const rightGate = document.querySelector('.right-gate');
-            const cardContainer = document.querySelector('.wedding-card-container');
-
-            let isOpened = false; // Biến cờ kiểm tra đã mở chưa
-
-            // Hàm kích hoạt nhạc nền (tối ưu hóa cho Autoplay Policy)
-            const activateMusic = () => {
-                backgroundMusic.currentTime = 0;
-                const playPromise = backgroundMusic.play();
-
-                if (playPromise !== undefined) {
-                    playPromise.then(() => {
-                        // Phát thành công (Desktop, iOS, hoặc Android sau tương tác)
-                        musicControl.classList.add('playing');
-                        musicControl.classList.remove('paused');
-                        iconSlash.style.display = 'none';
-                    }).catch(error => {
-                        // Nhạc bị chặn (Android/Chrome nghiêm ngặt)
-                        musicControl.classList.add('paused');
-                        musicControl.classList.remove('playing');
-                        iconSlash.style.display = 'flex'; // Hiển thị icon TẮT
-                        console.warn("Autoplay was prevented. User needs to tap the music icon.");
-                    });
-                }
-            };
-
-            // Hàm mở cổng
-            const openGate = () => {
-                if (isOpened) return;
-                isOpened = true;
-
-                // 1. Kích hoạt nhạc (sử dụng tương tác đầu tiên của người dùng)
-                activateMusic();
-
-                // 2. Kích hoạt hiệu ứng mở cổng
-                leftGate.classList.add('open');
-                rightGate.classList.add('open');
-
-                // 3. Hiển thị nội dung thiệp
-                cardContainer.classList.remove('hidden');
-                musicControl.classList.remove('hidden');
-
-                // 4. Ẩn hẳn lớp phủ sau khi hiệu ứng hoàn tất
-                setTimeout(() => {
-                    gateCover.style.display = 'none';
-                    checkVisibility(); // Chạy hiệu ứng reveal lần đầu
-
-                    // --- THÊM LOGIC TỐI ƯU CHO ANDROID/IOS (Chỉ chạy sau khi cổng mở) ---
-                    // Sau khi cổng mở, nếu nhạc vẫn bị chặn (chưa có class 'playing'), 
-                    // ta cần thử phát lại một lần nữa bằng cách giả lập một lần chạm.
-                    // Tuy nhiên, việc giả lập chạm là không nên. Giải pháp tốt nhất là:
-                    // Nếu nhạc bị chặn (có class 'paused'), người dùng cần click vào icon nhạc để bật. 
-
-                    // Đảm bảo nút nhạc được đặt ở trạng thái hiển thị gạch chéo
-                    if (!musicControl.classList.contains('playing')) {
-                        iconSlash.style.display = 'flex';
-                    }
-                }, 1500); // 1.5 giây = thời gian transition CSS
-            };
-
-            // Lắng nghe sự kiện click hoặc chạm để mở cổng
-            gateCover.addEventListener('click', openGate, { once: true });
-            gateCover.addEventListener('touchstart', openGate, { once: true });
-            // Dùng { once: true } để đảm bảo sự kiện chỉ chạy 1 lần.
-
-
-            // Hàm xử lý click nút điều khiển nhạc (BẬT/TẮT)
-            const toggleMusic = () => {
-                if (musicControl.classList.contains('playing')) {
-                    // Đang phát -> Tắt
-                    backgroundMusic.pause();
-                    musicControl.classList.remove('playing');
-                    musicControl.classList.add('paused');
-                    iconSlash.style.display = 'flex';
-                } else {
-                    // Đang tắt -> Bật
-                    backgroundMusic.play().then(() => {
-                        musicControl.classList.add('playing');
-                        musicControl.classList.remove('paused');
-                        iconSlash.style.display = 'none';
-                    }).catch(error => {
-                        console.error("Không thể phát nhạc sau khi người dùng click:", error);
-                        // Giữ nguyên trạng thái paused nếu vẫn thất bại
-                    });
-                }
-            };
-
-            // Gắn sự kiện click vào icon điều khiển nhạc
-            musicControl.addEventListener('click', toggleMusic);
-
-            // Mặc định ẩn icon nhạc
-            musicControl.classList.add('hidden');
+        const elements = document.querySelectorAll('.data-reveal-item');
+        elements.forEach(el => {
+            const rect = el.getBoundingClientRect();
+            if (rect.top < window.innerHeight - (window.innerHeight * 0.2)) {
+                el.classList.add('visible');
+            }
         });
-    </script>
+    }
+    window.addEventListener('scroll', checkVisibility);
+    window.addEventListener('load', checkVisibility);
+
+
+    // --- SCRIPT 2: ĐẾM NGƯỢC (COUNTDOWN LOGIC) ---
+    // Thiết lập ngày cưới
+    const WEDDING_DATE = new Date("December 10, 2025 10:00:00").getTime();
+
+    function updateCountdown() {
+        const now = new Date().getTime();
+        const distance = WEDDING_DATE - now;
+
+        const daysEl = document.querySelector('.countdown-item:nth-child(1) .countdown-value');
+        const hoursEl = document.querySelector('.countdown-item:nth-child(2) .countdown-value');
+        const minutesEl = document.querySelector('.countdown-item:nth-child(3) .countdown-value');
+        const secondsEl = document.querySelector('.countdown-item:nth-child(4) .countdown-value');
+
+        if (distance < 0) {
+            if (daysEl) {
+                daysEl.innerHTML = "🎉";
+                hoursEl.innerHTML = "Mừng";
+                minutesEl.innerHTML = "Hạnh";
+                secondsEl.innerHTML = "Phúc";
+            }
+            clearInterval(countdownInterval);
+            return;
+        }
+
+        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+        if (daysEl) {
+            daysEl.innerHTML = String(days).padStart(2, '0');
+            hoursEl.innerHTML = String(hours).padStart(2, '0');
+            minutesEl.innerHTML = String(minutes).padStart(2, '0');
+            secondsEl.innerHTML = String(seconds).padStart(2, '0');
+        }
+    }
+
+    const countdownInterval = setInterval(updateCountdown, 1000);
+    document.addEventListener('DOMContentLoaded', updateCountdown);
+    
+
+    // --- SCRIPT 3: ĐIỀU KHIỂN NHẠC VÀ HIỆU ỨNG MỞ CỔNG ---
+    document.addEventListener('DOMContentLoaded', () => {
+        const musicControl = document.getElementById('music-control');
+        const backgroundMusic = document.getElementById('background-music');
+        const iconSlash = document.getElementById('music-icon-slash');
+        
+        const gateCover = document.getElementById('gate-cover');
+        const leftGate = document.querySelector('.left-gate');
+        const rightGate = document.querySelector('.right-gate');
+        const cardContainer = document.querySelector('.wedding-card-container');
+        
+        let isOpened = false;
+
+        // Hàm kích hoạt nhạc nền (tối ưu hóa cho Autoplay Policy)
+        const activateMusic = () => {
+            backgroundMusic.currentTime = 0;
+            const playPromise = backgroundMusic.play();
+
+            if (playPromise !== undefined) {
+                playPromise.then(() => {
+                    // Phát thành công
+                    musicControl.classList.add('playing');
+                    musicControl.classList.remove('paused');
+                    iconSlash.style.display = 'none';
+                }).catch(error => {
+                    // Bị chặn (Trên Android/Chrome nghiêm ngặt)
+                    musicControl.classList.add('paused');
+                    musicControl.classList.remove('playing');
+                    iconSlash.style.display = 'flex'; // Hiển thị icon TẮT
+                    console.warn("Autoplay was prevented. User needs to tap the music icon.");
+                });
+            }
+        };
+
+        // Hàm mở cổng
+        const openGate = () => {
+            if (isOpened) return; 
+            isOpened = true;
+            
+            // Xóa ngay các lắng nghe sự kiện để tránh gọi lại
+            gateCover.removeEventListener('click', openGate);
+            gateCover.removeEventListener('touchstart', openGate);
+
+            // 1. Kích hoạt nhạc ngay khi có tương tác (Đây là điểm mấu chốt)
+            activateMusic();
+
+            // 2. Kích hoạt hiệu ứng mở cổng
+            leftGate.classList.add('open');
+            rightGate.classList.add('open');
+
+            // 3. Hiển thị nội dung thiệp
+            cardContainer.classList.remove('hidden');
+            musicControl.classList.remove('hidden');
+            
+            // 4. Ẩn hẳn lớp phủ sau khi hiệu ứng hoàn tất
+            setTimeout(() => {
+                gateCover.style.display = 'none';
+                checkVisibility(); // Chạy hiệu ứng reveal lần đầu
+                
+                // Cập nhật lại trạng thái hiển thị của icon gạch chéo
+                if (musicControl.classList.contains('paused')) {
+                    iconSlash.style.display = 'flex';
+                }
+            }, 1500); // 1.5 giây = thời gian transition CSS
+        };
+
+        // Gắn sự kiện click/touch vào gateCover (bao gồm chữ Hỷ)
+        // Chúng ta sử dụng { once: true } để chỉ lắng nghe lần chạm đầu tiên
+        gateCover.addEventListener('click', openGate, { once: true }); 
+        gateCover.addEventListener('touchstart', openGate, { once: true });
+
+
+        // Hàm xử lý click nút điều khiển nhạc (BẬT/TẮT)
+        const toggleMusic = () => {
+            if (musicControl.classList.contains('playing')) {
+                // Đang phát -> Tắt
+                backgroundMusic.pause();
+                musicControl.classList.remove('playing');
+                musicControl.classList.add('paused');
+                iconSlash.style.display = 'flex';
+            } else {
+                // Đang tắt -> Bật
+                backgroundMusic.play().then(() => {
+                    musicControl.classList.add('playing');
+                    musicControl.classList.remove('paused');
+                    iconSlash.style.display = 'none';
+                }).catch(error => {
+                    console.error("Không thể phát nhạc sau khi người dùng click:", error);
+                });
+            }
+        };
+
+        // Gắn sự kiện click vào icon điều khiển nhạc
+        musicControl.addEventListener('click', toggleMusic);
+
+        // Mặc định ẩn icon nhạc
+        musicControl.classList.add('hidden');
+    });
+</script>
 
 </body>
 
