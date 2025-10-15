@@ -254,117 +254,9 @@
     </div>
 
     <script>
- document.addEventListener('DOMContentLoaded', () => {
-    const musicControl = document.getElementById('music-control');
-    const backgroundMusic = document.getElementById('background-music');
-    const iconSlash = document.getElementById('music-icon-slash');
-
-    const gateCover = document.getElementById('gate-cover');
-    const leftGate = document.querySelector('.left-gate');
-    const rightGate = document.querySelector('.right-gate');
-    const cardContainer = document.querySelector('.wedding-card-container');
-
-    let isOpened = false;
-
-    // Đảm bảo playsinline (cho iOS và Android WebView)
-    backgroundMusic.setAttribute('playsinline', '');
-
-    // Hàm thử phát nhạc, có log lỗi để debug
-    const tryPlayMusic = async () => {
-      backgroundMusic.currentTime = 0;
-      try {
-        await backgroundMusic.play();
-        musicControl.classList.add('playing');
-        musicControl.classList.remove('paused');
-        iconSlash.style.display = 'none';
-        console.log('✅ Audio started successfully');
-        return true;
-      } catch (err) {
-        console.warn('⚠️ Audio play was prevented:', err && err.message ? err.message : err);
-        musicControl.classList.add('paused');
-        musicControl.classList.remove('playing');
-        iconSlash.style.display = 'flex';
-        return false;
-      }
-    };
-
-    // Hàm mở cổng và phát nhạc (được gọi khi user chạm)
-    const openGate = async (event) => {
-      if (isOpened) return;
-      isOpened = true;
-
-      // Gỡ bỏ sự kiện sau khi mở
-      gateCover.removeEventListener('click', openGate);
-      gateCover.removeEventListener('pointerup', openGate);
-      gateCover.removeEventListener('touchend', openGate);
-
-      // Phát nhạc ngay khi có tương tác người dùng
-      await tryPlayMusic();
-
-      // Hiệu ứng mở cổng
-      leftGate.classList.add('open');
-      rightGate.classList.add('open');
-
-      // Hiện nội dung và nút điều khiển nhạc
-      cardContainer.classList.remove('hidden');
-      musicControl.classList.remove('hidden');
-
-      // Ẩn lớp phủ cổng sau hiệu ứng
-      setTimeout(() => {
-        gateCover.style.display = 'none';
-      }, 1500);
-    };
-
-    // Gắn sự kiện mở cổng — dùng pointerup và click thay vì touchstart
-    gateCover.addEventListener('click', openGate, { once: true });
-    gateCover.addEventListener('pointerup', openGate, { once: true });
-    gateCover.addEventListener('touchend', openGate, { once: true });
-
-    // Xử lý bật/tắt nhạc khi người dùng nhấn nút đĩa nhạc
-    const toggleMusic = async () => {
-      if (musicControl.classList.contains('playing')) {
-        backgroundMusic.pause();
-        musicControl.classList.remove('playing');
-        musicControl.classList.add('paused');
-        iconSlash.style.display = 'flex';
-      } else {
-        try {
-          await backgroundMusic.play();
-          musicControl.classList.add('playing');
-          musicControl.classList.remove('paused');
-          iconSlash.style.display = 'none';
-        } catch (err) {
-          console.error('❌ Cannot play audio when toggling:', err);
-        }
-      }
-    };
-
-    musicControl.addEventListener('click', toggleMusic);
-
-    // Ẩn nút điều khiển nhạc ban đầu, chỉ hiện sau khi mở cổng
-    musicControl.classList.add('hidden');
-  });
-        
-        // --- SCRIPT CHO HIỆU ỨNG CUỘN (SCROLL REVEAL) ---
-        function checkVisibility() {
-            const cardContainer = document.querySelector('.wedding-card-container');
-            if (cardContainer && cardContainer.classList.contains('hidden')) {
-                return;
-            }
-
-            const elements = document.querySelectorAll('.data-reveal-item');
-            elements.forEach(el => {
-                const rect = el.getBoundingClientRect();
-                if (rect.top < window.innerHeight - (window.innerHeight * 0.2)) {
-                    el.classList.add('visible');
-                }
-            });
-        }
-        window.addEventListener('scroll', checkVisibility);
-        window.addEventListener('load', checkVisibility);
-
-
-        // --- SCRIPT CHO ĐIỀU KHIỂN NHẠC VÀ HIỆU ỨNG MỞ CỔNG ---
+        // ===========================
+        // SCRIPT CHÍNH - MỞ CỔNG & PHÁT NHẠC
+        // ===========================
         document.addEventListener('DOMContentLoaded', () => {
             const musicControl = document.getElementById('music-control');
             const backgroundMusic = document.getElementById('background-music');
@@ -375,83 +267,107 @@
             const rightGate = document.querySelector('.right-gate');
             const cardContainer = document.querySelector('.wedding-card-container');
 
-            let isOpened = false; // Biến cờ kiểm tra đã mở chưa
+            let isOpened = false;
 
-            // Hàm kích hoạt nhạc nền
-            const activateMusic = () => {
+            // Cho phép phát nhạc inline trên iOS và Android
+            backgroundMusic.setAttribute('playsinline', '');
+
+            // Hàm phát nhạc có log kiểm tra lỗi
+            const tryPlayMusic = async () => {
                 backgroundMusic.currentTime = 0;
-                const playPromise = backgroundMusic.play();
-
-                if (playPromise !== undefined) {
-                    playPromise.then(() => {
-                        musicControl.classList.add('playing');
-                        musicControl.classList.remove('paused');
-                        iconSlash.style.display = 'none';
-                    }).catch(error => {
-                        // Nếu nhạc bị chặn, vẫn đặt ở trạng thái dừng và hiển thị gạch chéo
-                        musicControl.classList.add('paused');
-                        musicControl.classList.remove('playing');
-                        iconSlash.style.display = 'flex';
-                    });
+                try {
+                    await backgroundMusic.play();
+                    musicControl.classList.add('playing');
+                    musicControl.classList.remove('paused');
+                    iconSlash.style.display = 'none';
+                    console.log('✅ Nhạc đã phát thành công');
+                } catch (err) {
+                    console.warn('⚠️ Trình duyệt chặn phát nhạc:', err.message);
+                    musicControl.classList.add('paused');
+                    musicControl.classList.remove('playing');
+                    iconSlash.style.display = 'flex';
                 }
             };
 
-            // Hàm mở cổng
-            const openGate = () => {
-                if (isOpened) return; // Chỉ mở 1 lần
+            // Hàm mở cổng và hiển thị nội dung thiệp
+            const openGate = (event) => {
+                if (isOpened) return;
                 isOpened = true;
 
-                // 1. Kích hoạt nhạc
-                activateMusic();
+                // Gỡ bỏ sự kiện sau khi mở
+                gateCover.removeEventListener('click', openGate);
+                gateCover.removeEventListener('pointerup', openGate);
+                gateCover.removeEventListener('touchend', openGate);
 
-                // 2. Kích hoạt hiệu ứng mở cổng (thêm class 'open')
+                // Bắt đầu hiệu ứng mở cổng
                 leftGate.classList.add('open');
                 rightGate.classList.add('open');
 
-                // 3. Hiển thị nội dung thiệp
+                // Hiện nội dung thiệp và nút nhạc
                 cardContainer.classList.remove('hidden');
                 musicControl.classList.remove('hidden');
 
-                // 4. Ẩn hẳn lớp phủ sau khi hiệu ứng hoàn tất
+                // Ẩn lớp phủ sau 1.5s (đúng thời gian animation)
                 setTimeout(() => {
                     gateCover.style.display = 'none';
-                    checkVisibility(); // Chạy hiệu ứng reveal lần đầu
-                }, 1500); // 1.5 giây = thời gian transition CSS
+                    checkVisibility(); // Gọi luôn hiệu ứng reveal ban đầu
+                }, 1500);
+
+                // Thử phát nhạc song song (không chặn hiệu ứng)
+                tryPlayMusic();
             };
 
-            // Lắng nghe sự kiện click hoặc chạm bất kỳ đâu trên màn hình
-            // Lắng nghe trên toàn bộ `gateCover`
-            gateCover.addEventListener('click', openGate);
-            gateCover.addEventListener('touchstart', openGate);
+            // Gắn sự kiện mở cổng (Android + iOS)
+            gateCover.addEventListener('click', openGate, { once: true });
+            gateCover.addEventListener('pointerup', openGate, { once: true });
+            gateCover.addEventListener('touchend', openGate, { once: true });
 
-
-            // Hàm xử lý click nút điều khiển nhạc (BẬT/TẮT) - Giữ nguyên
-            const toggleMusic = () => {
+            // Hàm bật/tắt nhạc khi nhấn nút
+            const toggleMusic = async () => {
                 if (musicControl.classList.contains('playing')) {
                     backgroundMusic.pause();
                     musicControl.classList.remove('playing');
                     musicControl.classList.add('paused');
                     iconSlash.style.display = 'flex';
                 } else {
-                    backgroundMusic.currentTime = 0;
-
-                    backgroundMusic.play().then(() => {
+                    try {
+                        await backgroundMusic.play();
                         musicControl.classList.add('playing');
                         musicControl.classList.remove('paused');
                         iconSlash.style.display = 'none';
-                    }).catch(error => {
-                        console.error("Không thể phát nhạc:", error);
-                    });
+                    } catch (err) {
+                        console.error('❌ Không thể phát nhạc:', err.message);
+                    }
                 }
             };
 
-            // Gắn sự kiện click vào icon điều khiển nhạc
+            // Sự kiện cho nút nhạc
             musicControl.addEventListener('click', toggleMusic);
 
-            // Mặc định ẩn icon nhạc
+            // Ẩn icon nhạc khi chưa mở cổng
             musicControl.classList.add('hidden');
         });
+
+        // ===========================
+        // HIỆU ỨNG CUỘN (REVEAL)
+        // ===========================
+        function checkVisibility() {
+            const cardContainer = document.querySelector('.wedding-card-container');
+            if (cardContainer && cardContainer.classList.contains('hidden')) return;
+
+            const elements = document.querySelectorAll('.data-reveal-item');
+            elements.forEach(el => {
+                const rect = el.getBoundingClientRect();
+                if (rect.top < window.innerHeight - window.innerHeight * 0.2) {
+                    el.classList.add('visible');
+                }
+            });
+        }
+
+        window.addEventListener('scroll', checkVisibility);
+        window.addEventListener('load', checkVisibility);
     </script>
+
 
 </body>
 
