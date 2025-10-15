@@ -253,8 +253,8 @@
         </div>
     </div>
 
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
+    <script>
+ document.addEventListener('DOMContentLoaded', () => {
     const musicControl = document.getElementById('music-control');
     const backgroundMusic = document.getElementById('background-music');
     const iconSlash = document.getElementById('music-icon-slash');
@@ -344,8 +344,114 @@
     // Ẩn nút điều khiển nhạc ban đầu, chỉ hiện sau khi mở cổng
     musicControl.classList.add('hidden');
   });
-</script>
+        
+        // --- SCRIPT CHO HIỆU ỨNG CUỘN (SCROLL REVEAL) ---
+        function checkVisibility() {
+            const cardContainer = document.querySelector('.wedding-card-container');
+            if (cardContainer && cardContainer.classList.contains('hidden')) {
+                return;
+            }
 
+            const elements = document.querySelectorAll('.data-reveal-item');
+            elements.forEach(el => {
+                const rect = el.getBoundingClientRect();
+                if (rect.top < window.innerHeight - (window.innerHeight * 0.2)) {
+                    el.classList.add('visible');
+                }
+            });
+        }
+        window.addEventListener('scroll', checkVisibility);
+        window.addEventListener('load', checkVisibility);
+
+
+        // --- SCRIPT CHO ĐIỀU KHIỂN NHẠC VÀ HIỆU ỨNG MỞ CỔNG ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const musicControl = document.getElementById('music-control');
+            const backgroundMusic = document.getElementById('background-music');
+            const iconSlash = document.getElementById('music-icon-slash');
+
+            const gateCover = document.getElementById('gate-cover');
+            const leftGate = document.querySelector('.left-gate');
+            const rightGate = document.querySelector('.right-gate');
+            const cardContainer = document.querySelector('.wedding-card-container');
+
+            let isOpened = false; // Biến cờ kiểm tra đã mở chưa
+
+            // Hàm kích hoạt nhạc nền
+            const activateMusic = () => {
+                backgroundMusic.currentTime = 0;
+                const playPromise = backgroundMusic.play();
+
+                if (playPromise !== undefined) {
+                    playPromise.then(() => {
+                        musicControl.classList.add('playing');
+                        musicControl.classList.remove('paused');
+                        iconSlash.style.display = 'none';
+                    }).catch(error => {
+                        // Nếu nhạc bị chặn, vẫn đặt ở trạng thái dừng và hiển thị gạch chéo
+                        musicControl.classList.add('paused');
+                        musicControl.classList.remove('playing');
+                        iconSlash.style.display = 'flex';
+                    });
+                }
+            };
+
+            // Hàm mở cổng
+            const openGate = () => {
+                if (isOpened) return; // Chỉ mở 1 lần
+                isOpened = true;
+
+                // 1. Kích hoạt nhạc
+                activateMusic();
+
+                // 2. Kích hoạt hiệu ứng mở cổng (thêm class 'open')
+                leftGate.classList.add('open');
+                rightGate.classList.add('open');
+
+                // 3. Hiển thị nội dung thiệp
+                cardContainer.classList.remove('hidden');
+                musicControl.classList.remove('hidden');
+
+                // 4. Ẩn hẳn lớp phủ sau khi hiệu ứng hoàn tất
+                setTimeout(() => {
+                    gateCover.style.display = 'none';
+                    checkVisibility(); // Chạy hiệu ứng reveal lần đầu
+                }, 1500); // 1.5 giây = thời gian transition CSS
+            };
+
+            // Lắng nghe sự kiện click hoặc chạm bất kỳ đâu trên màn hình
+            // Lắng nghe trên toàn bộ `gateCover`
+            gateCover.addEventListener('click', openGate);
+            gateCover.addEventListener('touchstart', openGate);
+
+
+            // Hàm xử lý click nút điều khiển nhạc (BẬT/TẮT) - Giữ nguyên
+            const toggleMusic = () => {
+                if (musicControl.classList.contains('playing')) {
+                    backgroundMusic.pause();
+                    musicControl.classList.remove('playing');
+                    musicControl.classList.add('paused');
+                    iconSlash.style.display = 'flex';
+                } else {
+                    backgroundMusic.currentTime = 0;
+
+                    backgroundMusic.play().then(() => {
+                        musicControl.classList.add('playing');
+                        musicControl.classList.remove('paused');
+                        iconSlash.style.display = 'none';
+                    }).catch(error => {
+                        console.error("Không thể phát nhạc:", error);
+                    });
+                }
+            };
+
+            // Gắn sự kiện click vào icon điều khiển nhạc
+            musicControl.addEventListener('click', toggleMusic);
+
+            // Mặc định ẩn icon nhạc
+            musicControl.classList.add('hidden');
+        });
+    </script>
 
 </body>
 
